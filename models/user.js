@@ -15,7 +15,6 @@ exports.save = function (doc,callback) {
 }
 
 exports.get = function(username, callback) {
-    console.log("Connected to mongodb") 
     // 讀取 users 集合
     db.collection('users', function(err, collection) {
       if (err) {

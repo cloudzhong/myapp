@@ -93,7 +93,12 @@ router.post('/login', function(req, res) {
       }
       req.session.user = user;
       req.session.success = '登入成功';
-      res.redirect('/users/'+user.name);
+      if (req.session.originalUrl) {
+        res.redirect(req.session.originalUrl);
+        delete req.session.originalUrl
+      } else {
+        res.redirect('/users/'+user.name);
+      }
     });
   });
   
@@ -134,7 +139,7 @@ router.post('/posts', checkLogin);
 router.post('/posts', function(req, res) {
     var user = req.session.user;
     var post = req.body;
-    
+    post.tags
     console.log(post, "post data to /posts ??? ")
 
     Post.save(user, post, function(err, doc) {
@@ -163,6 +168,7 @@ router.post('/post', function(req, res) {
   
 function checkLogin(req, res, next) {
   if (!req.session.user) {
+    req.session.originalUrl = req.originalUrl;
     req.session.error = '未登入';
     return res.redirect('/login');
   }
