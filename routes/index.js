@@ -1,6 +1,7 @@
 var express = require('express');
 var crypto = require('crypto');
 var Post = require('../models/post');
+var mdoc = require('../models/MongoDoc');
 var User = require('../models/user.js');
 var router = express.Router();
 
@@ -130,10 +131,50 @@ router.get('/users/:user', function(req, res) {
 
 router.get('/posts', checkLogin);
 router.get('/posts', function(req, res) {
-    res.render('post', {
+    res.render('postnew', {
       title: '發表博客',
     });
 });
+
+router.all('/posts/:postid', checkLogin);
+router.get('/:resource/:postid', function(req, res) {
+  resource = req.params.resource;
+  mdoc.findById(req.params.postid, resource, function(err, doc){
+    if (err) {
+      console.log(err)
+      throw new Error("can not found resource "+ resource +" with id " + req.params.postid)
+    }
+    
+    res.render(resource.slice(0,-1), {
+      title: doc.title,
+      post: doc
+    });
+      
+    if (resource == 'posts') {
+      if (doc.pv) {
+        doc.pv = doc.pv + 1;
+      } else {
+        doc.pv = 1;
+      }
+      mdoc.updateById(doc._id, resource, doc, function(err,doc){
+        if (err) {
+          throw err;
+        }
+      })
+    }
+  })
+});
+
+router.delete('posts/:postid', function(req, res) {
+  id = req.params.postid;
+  mdoc.findById(id, 'posts', function(err,post){
+    if (!post) {
+      throw new Error("no post with id : " + id + "to be deleted.")
+    } else {
+      mdoc.delById(id,"posts")
+    }
+  })
+})
 
 router.post('/posts', checkLogin);
 router.post('/posts', function(req, res) {

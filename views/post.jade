@@ -1,23 +1,7 @@
 extends layout
 
 block content
-  form(class="form-horizontal" method="post")
-    fieldset
-      legend 發表博客
-      div(class="control-group")
-          label(class="control-label" , for="title") 标题：
-          div(class="controls")
-              input(type="text",class="input-xlarge",id="title",name="title")
-
-      div(class="control-group")
-          label(class="control-label" for="tag") 标签：
-          div(class="controls")
-              input(type="text",class="input-xlarge",id="tag",name="tag")
-                  
-      div(class="form-actions")
-          label(class="control-label" for="content") 正文：
-          div(class="controls")
-              textarea(id='content', name="content",rows="20",cols="20")
-          
-      div(class="form-actions")
-          button(type="submit",class="btn btn-primary") 發表
+  article 
+    h1= post.title
+    p= post.content
+  p 阅读次数 #{post.pv}

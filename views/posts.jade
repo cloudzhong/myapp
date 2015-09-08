@@ -6,6 +6,7 @@ each post, index in posts
             a(href="/users/#{post.user}") #{post.user} 說
         p
             small= post.time
-        p= post.post
+        p
+          a(href='posts/#{post._id}')= post.post
     if index % 3 === 2 || index === posts.length - 1
         | </div>

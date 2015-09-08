@@ -1,6 +1,6 @@
-
+var ObjectID = require('mongodb').ObjectID
+var docName = "posts"
 exports.save = function (user, data, cb) {
-
   var doc = {
     user: user.name,
     avatar: user.avatar,
@@ -20,6 +20,19 @@ exports.save = function (user, data, cb) {
          cb(err, post);
     });
 };
+
+exports.updateById = function (id, doc, callback) {
+  db.collection(docName).findOneAndUpdate( {"_id":new ObjectID(id)},
+      {$set: doc} ,
+      {returnOriginal:false},
+      function(err, doc) {
+        if (err) {
+            console.error(err.message)
+        }
+        console.log(doc," is the new post")
+        callback(err, doc)
+      })
+}
 
 exports.get = function (username, callback) {
     
@@ -42,4 +55,17 @@ exports.get = function (username, callback) {
     */
     callback(null, docs);
     });
+};
+
+exports.getbyId = function (id, callback) {
+    
+    var col = db.collection('posts')
+    // 查找 user 屬性爲 username 的文檔，如果 username 是 null 則匹配全部
+    var query = {"_id":new ObjectID(id)};
+    col.findOne(query,function(err,doc){
+      if (err) {
+         callback(err, null);
+      } 
+      callback(null,doc)
+  })
 };

@@ -1,10 +1,23 @@
 var dbcof = require('./db')
+var ObjectID = require('mongodb').ObjectID
 
 function MongoDoc(doc) {
     this.doc = doc
 }
 module.exports = MongoDoc
 
+
+MongoDoc.updateById = function (id, col, doc, callback){
+  
+  this.update(doc,{'col':col, 'criteria': {"_id":new ObjectID(id)}},callback)
+}
+MongoDoc.findById = function (id, col, callback) {
+  try {
+  this.findOne(col, {"_id":new ObjectID(id)}, callback);
+  } catch (err) {
+    throw new Error("Can not found post with Id: " + id);
+  }
+}
 /*
 option support settings
     col:collection  
@@ -21,8 +34,7 @@ MongoDoc.update = function (doc, option, callback){
       err = new Error("criteria must provided")
       callback(err, null)
   }
-    var willcreate = option.upsert?option.upsert:true
-    dbcof.MongoClient.connect(dbcof.url, function(err, db) {
+    var willcreate = option.upsert?option.upsert:false
     var collect = db.collection(option.col)
     if (option.index) {
         collect.createIndex(option.index, {unique: true} )
@@ -35,47 +47,41 @@ MongoDoc.update = function (doc, option, callback){
             if (err) {
                 console.error(err.message)
             }
-            db.close()
             callback(err, doc)
           })
-    })
 }
 
 MongoDoc.findOne = function(col, criteria, callback) {
-    dbcof.MongoClient.connect(dbcof.url, function(err, db) {
-        db.collection(col).findOne(criteria,function(err,doc){
-            console.log("search result: ",doc) 
-            if (err) {
-                console.error(err)
-            } 
-            db.close()
-            callback(err,doc)
-        })
-    })
-}
-
-MongoDoc.search = function(col, criteria, callback) {
-    dbcof.MongoClient.connect(dbcof.url, function(err, db) {
-    // 讀取 users 集合
-    db.collection(col).find(criteria).toArray(function(err,data){
-        if (err) {
-            console.error(err)
-        } 
-        db.close()
-        callback(err,data)
-    })
+  db.collection(col).findOne(criteria,function(err,doc){
+      console.log("search result: ",doc) 
+      if (err) {
+          console.error(err)
+      } 
+      callback(err,doc)
   })
 }
 
+MongoDoc.search = function(col, criteria, callback) {
+  // 讀取 users 集合
+  db.collection(col).find(criteria).toArray(function(err,data){
+      if (err) {
+          console.error(err)
+      } 
+
+      callback(err,data)
+  })
+}
+
+MongoDoc.delById = function(id,col,callback){
+  this.del(col, {"_id":new ObjectID(id)}, callback)
+}
+
 MongoDoc.del = function(col, criteria, callback) {
-    dbcof.MongoClient.connect(dbcof.url, function(err, db) {
-    // 讀取 users 集合
-    db.collection(col).deleteOne(criteria, function(err,data){
-        if (err) {
-            console.error(err)
-        } 
-        db.close()
-        callback(err,data)
-    })
+  // 讀取 users 集合
+  db.collection(col).deleteOne(criteria, function(err,data){
+      if (err) {
+          console.error(err)
+      } 
+      callback(err,data)
   })
 }
