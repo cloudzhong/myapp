@@ -7,11 +7,14 @@ block content
       th 邮箱
       th
       th
+      th
     each user in users.length ? users : ['There are no users']
       tr
         td
           a(href='/users/#{user._id}') #{user.name}
         td= user.email
+        td
+          img(src='#{user.avatar}?s=48')
         th
           a(href='/users/#{user._id}/edit') edit
         td 

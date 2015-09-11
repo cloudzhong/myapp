@@ -4,6 +4,7 @@ block content
   form(method="post",action="/posts/#{doc._id}/delete",onSubmit="javascript:return window.confirm('确认删除博客吗？')")
     div 作者 
       a(href="/users/#{doc.user}") #{doc.author}
+      img(src='#{doc.avatar}?s=48')
     div 发表于 #{doc.time}
     article 
       h4= "标签：" + doc.tag

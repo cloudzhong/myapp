@@ -43,7 +43,7 @@ router.post('/reg', function(req, res) {
         name: req.body.username,
         password: password,
         email: req.body.email,
-        avatar: gravatar.url(req.body.email, {s: 48})
+        avatar: gravatar.url(req.body.email)
     };
     
     //检查用户名是否已经存在
@@ -127,17 +127,23 @@ router.get('/users', function(req, res) {
 
 router.get('/users/:id/posts', function(req, res) {
   var id = req.params.id;
-  mdoc.find('posts', {user: id}, function(err, posts) {
-  if (err) {
-    req.session.error = err;
-    return res.redirect('/');
-  }
-  console.log('posts found', posts);
-  res.render('userposts', {
-    title: user.name,
-    posts: posts,
-  });
-  });
+  mdoc.find('users', {_id:new ObjectID(id)} ,function(err, userDoc) {
+    if(!userDoc.length){
+      userDoc = [{name:"Not Found", email:"So I don't know"}]
+    }
+    mdoc.find('posts', {user: id}, function(err, posts) {
+      if (err) {
+        req.session.error = err;
+        return res.redirect('/');
+      }
+      console.log('Found user: ', userDoc)
+      res.render('userposts', {
+        qUser: userDoc[0],
+        title: '用户文章',
+        posts: posts,
+      });
+    });
+  })
 });
 
 router.get('/posts', checkLogin);
@@ -155,6 +161,9 @@ function updateDoc(req,res){
   console.log("put method modified post: ",doc);
   resource = req.params.resource;
   id = req.params.docId;
+  if (resource == 'users'){
+    doc.avatar = gravatar.url(req.body.email)
+  }
   mdoc.updateById(id, resource,doc,function(err,doc){
     if (err) {
       req.session.error = err.message;
