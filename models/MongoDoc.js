@@ -49,7 +49,8 @@ MongoDoc.update = function (doc, option, callback){
         {upsert:willcreate,returnOriginal:false},
           function(err, doc) {
             if (err) {
-                console.error(err.message)
+                console.error('***********Error in update document: ',err.message);
+                return callback(err, null)
             }
             callback(err, doc.value)
           })
@@ -58,9 +59,10 @@ MongoDoc.update = function (doc, option, callback){
 MongoDoc.findOne = function(col, criteria, callback) {
   db.collection(col).findOne(criteria,function(err,doc){
       if (err) {
-          console.error(err)
+          console.error(err);
+          return callback(err, null);
       } 
-      callback(err,doc)
+      callback(err,doc);
   })
 }
 
@@ -68,10 +70,11 @@ MongoDoc.find = function(col, criteria, callback) {
   // 讀取 users 集合
   db.collection(col).find(criteria).toArray(function(err,data){
       if (err) {
-          console.error(err)
+          console.error(err);
+          return callback(err, null);
       } 
 
-      callback(err,data)
+      callback(err,data);
   })
 }
 
@@ -83,8 +86,9 @@ MongoDoc.del = function(col, criteria, callback) {
   // 讀取 users 集合
   db.collection(col).deleteOne(criteria, function(err,data){
       if (err) {
-          console.error(err)
+          console.error(err);
+          return callback(err, null);
       } 
-      callback(err,data)
+      callback(err,data);
   })
 }

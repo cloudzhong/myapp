@@ -1,3 +1,4 @@
+var gravatar = require('gravatar');
 var express = require('express');
 var crypto = require('crypto');
 var DBRef = require('mongodb').DBRef
@@ -41,7 +42,8 @@ router.post('/reg', function(req, res) {
     var newUser = {
         name: req.body.username,
         password: password,
-        email: req.body.email
+        email: req.body.email,
+        avatar: gravatar.url(req.body.email, {s: 48})
     };
     
     //检查用户名是否已经存在
@@ -125,23 +127,16 @@ router.get('/users', function(req, res) {
 
 router.get('/users/:id/posts', function(req, res) {
   var id = req.params.id;
-  mdoc.findById(id, 'users', function(err, user) {
-    if (!user) {
-      req.session.error = '用戶不存在';
-      return res.redirect('/');
-    }
-    
-    mdoc.find('posts', {user: id}, function(err, posts) {
-      if (err) {
-        req.session.error = err;
-        return res.redirect('/');
-      }
-      console.log('posts found', posts);
-      res.render('userposts', {
-        title: user.name,
-        posts: posts,
-      });
-    });
+  mdoc.find('posts', {user: id}, function(err, posts) {
+  if (err) {
+    req.session.error = err;
+    return res.redirect('/');
+  }
+  console.log('posts found', posts);
+  res.render('userposts', {
+    title: user.name,
+    posts: posts,
+  });
   });
 });
 
@@ -159,15 +154,14 @@ function updateDoc(req,res){
   doc= req.body;
   console.log("put method modified post: ",doc);
   resource = req.params.resource;
-  mdoc.updateById(req.params.docId,resource,doc,function(err,doc){
+  id = req.params.docId;
+  mdoc.updateById(id, resource,doc,function(err,doc){
     if (err) {
       req.session.error = err.message;
+      return res.redirect(req.originalUrl);
     } else {
       req.session.success = '修改成功';
-      res.render(resource.slice(0,-1), {
-        title: doc.title,
-        doc: doc
-      });
+      res.redirect('/' + resource + '/' + id);
     }
   });
 }
@@ -185,9 +179,10 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
       throw new Error("can not found resource "+ resource +" with id " + req.params.docId)
     }
     if (!doc) {
-      req.session.error = 'resource does not exists';
+      req.session.error = resource.slice(0,-1) + ' does not exists';
+      return res.redirect('/');
     }
-    
+    // only for posts to count click.
     if (resource == 'posts') {
       if (doc.pv) {
         doc.pv = doc.pv + 1;
@@ -224,8 +219,8 @@ router.post('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', updateDoc)
 function delDoc(req, res){
   resource = req.params.resource;
   id = req.params.docId;
-  mdoc.findById(id, resource, function(err,post){
-    if (!post) {
+  mdoc.findById(id, resource, function(err,doc){
+    if (!doc) {
       throw new Error("no resource with id : " + id + "to be deleted.")
     } else {
       mdoc.delById(id, resource, function (err,doc) {
@@ -254,7 +249,7 @@ router.post('/posts', function(req, res) {
     Post.save(user, post, function(err, doc) {
       if (err) {
         req.session.error = err;
-        return res.redirect('/');
+        return res.redirect(req.originalUrl);
       }
       req.session.success ='發表成功';
       res.redirect('/users/' + user._id + '/posts');

@@ -5,8 +5,14 @@ block content
     tr
       th 姓名
       th 邮箱
+      th
+      th
     each user in users.length ? users : ['There are no users']
       tr
         td
           a(href='/users/#{user._id}') #{user.name}
         td= user.email
+        th
+          a(href='/users/#{user._id}/edit') edit
+        td 
+          a(href='/users/#{user._id}/delete') delete

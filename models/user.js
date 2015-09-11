@@ -2,7 +2,8 @@
 exports.save = function (doc,callback) {
     var collection = db.collection('users')
     // 爲 name 屬性添加索引
-    collection.createIndex('name', {unique: true} )
+    collection.createIndex('name', {unique: true} );
+    collection.createIndex('name', {unique: true} );
     // 寫入 user 文檔
     collection.insertOne(doc, function(err, user) {
         if (err) {
