@@ -1,4 +1,3 @@
-var dbcof = require('./db')
 var ObjectID = require('mongodb').ObjectID
 
 function MongoDoc(doc) {
