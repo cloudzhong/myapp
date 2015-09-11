@@ -5,9 +5,9 @@ block content
     fieldset
       legend 發表博客
       div(class="control-group")
-          label(class="control-label" , for="title") 标题：
+          label(class="control-label", for="title") 标题：
           div(class="controls")
-              input(type="text",class="input-xlarge",id="title",name="title")
+              input(type="text",class="input-xlarge",id="title",name="title", required="required")
 
       div(class="control-group")
           label(class="control-label" for="tag") 标签：
@@ -17,7 +17,7 @@ block content
       div(class="control-group")
           label(class="control-label" for="content") 正文：
           div(class="controls")
-              textarea(id='content', name="content",rows="20",cols="60")
+              textarea(id='content', name="content",rows="20",cols="60",required="required")
           
       div(class="form-actions")
           button(type="submit",class="btn btn-primary") 發表

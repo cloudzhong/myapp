@@ -11,9 +11,6 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
     Post.get(null, function(err, posts) {
-      if (err) {
-        posts = [];
-      }
       res.render('index', {
         title: '首頁',
         posts: posts,
@@ -150,17 +147,17 @@ router.get('/posts', checkLogin);
 //router.all('/posts/*', checkLogin);
 
 router.get('/:resource([a-z]+s)/new', function(req, res) {
-  resource = req.params.resource;
+  var resource = req.params.resource;
   res.render(resource.slice(0,-1)+ '_new', {
     title: 'new '+ resource,
   });
 });
 
 function updateDoc(req,res){
-  doc= req.body;
-  console.log("put method modified post: ",doc);
-  resource = req.params.resource;
-  id = req.params.docId;
+  var doc = req.body;
+  console.log("put method modified data",doc);
+  var resource = req.params.resource;
+  var id = req.params.docId;
   if (resource == 'users'){
     doc.avatar = gravatar.url(req.body.email)
   }
@@ -168,10 +165,9 @@ function updateDoc(req,res){
     if (err) {
       req.session.error = err.message;
       return res.redirect(req.originalUrl);
-    } else {
-      req.session.success = '修改成功';
-      res.redirect('/' + resource + '/' + id);
     }
+    req.session.success = '修改成功';
+    res.redirect('/' + resource + '/' + id);
   });
 }
 
@@ -181,7 +177,7 @@ router.put('/:resource([a-z]+s)/:docId([a-f0-9]+)', updateDoc)
 //show resource
 router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
   console.log('in router get method /resource/docId');
-  resource = req.params.resource;
+  var resource = req.params.resource;
   mdoc.findById(req.params.docId, resource, function(err, doc){
     if (err) {
       console.log(err)
@@ -213,7 +209,7 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
 
 //edit resource
 router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', function(req, res) {
-  resource = req.params.resource;
+  var resource = req.params.resource;
   mdoc.findById(req.params.docId, resource, function(err, doc){
     res.render(resource.slice(0,-1)+'_edit', {
       title: 'edit',
@@ -224,10 +220,30 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', function(req, res) {
 
 router.post('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', updateDoc)
 
+router.post('/posts/:docId([a-f0-9]+)/comments', function(req,res){
+ 
+  var id = req.params.docId;
+  var body = req.body;
+  var newComment = {
+    name: body.name,
+    avatar: gravatar.url(body.email),
+    email: body.email,
+    website: body.website,
+    time: new Date(),
+    content: body.content
+  };
+  Post.comments(id, newComment,function(err,doc){
+    if (err) {
+      req.session.error = err.message;
+      return res.redirect(req.originalUrl);
+    }
+    res.redirect('/posts/' + id);
+  })
+})
 
 function delDoc(req, res){
-  resource = req.params.resource;
-  id = req.params.docId;
+  var resource = req.params.resource;
+  var id = req.params.docId;
   mdoc.findById(id, resource, function(err,doc){
     if (!doc) {
       throw new Error("no resource with id : " + id + "to be deleted.")

@@ -24,6 +24,18 @@ exports.save = function (user, data, cb) {
     });
 };
 
+exports.comments = function(id, comment, callback){
+  db.collection('posts').updateOne({_id:new ObjectID(id)},
+    {"$push": {comments: comment}}, 
+    function (err, doc){
+      if (err) {
+        console.error('***********Error in add comments: ',err.message);
+        return callback(err, null)
+      }
+      callback(err, doc.value)
+  })
+}
+
 exports.updateById = function (id, doc, callback) {
   db.collection(docName).findOneAndUpdate( {"_id":new ObjectID(id)},
       {$set: doc} ,

@@ -1,7 +1,6 @@
 var ObjectID = require('mongodb').ObjectID
 
-function MongoDoc(doc) {
-    this.doc = doc
+function MongoDoc() {
 }
 module.exports = MongoDoc
 
@@ -10,6 +9,7 @@ MongoDoc.updateById = function (id, col, doc, callback){
   
   this.update(doc,{'col':col, 'criteria': {"_id":new ObjectID(id)}},callback)
 }
+
 MongoDoc.findById = function (id, col, callback) {
   try {
   this.findOne(col, {"_id":new ObjectID(id)}, callback);
@@ -25,10 +25,6 @@ option support settings
     index: need create index on this field
     
 */
-
-MongoDoc.updateById = function(id,col,doc,callback){
-  this.update(doc, {col:col,criteria:{"_id":new ObjectID(id)}}, callback)
-}
 
 MongoDoc.update = function (doc, option, callback){
   if (!option.col){
