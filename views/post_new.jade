@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  form(class="form-horizontal" method="post")
+  form(class="form-horizontal" method="post" action="/posts")
     fieldset
       legend 發表博客
       div(class="control-group")
@@ -14,10 +14,10 @@ block content
           div(class="controls")
               input(type="text",class="input-xlarge",id="tag",name="tag")
                   
-      div(class="form-actions")
+      div(class="control-group")
           label(class="control-label" for="content") 正文：
           div(class="controls")
-              textarea(id='content', name="content",rows="20",cols="20")
+              textarea(id='content', name="content",rows="20",cols="60")
           
       div(class="form-actions")
           button(type="submit",class="btn btn-primary") 發表

@@ -15,7 +15,7 @@ MongoDoc.findById = function (id, col, callback) {
   try {
   this.findOne(col, {"_id":new ObjectID(id)}, callback);
   } catch (err) {
-    throw new Error("Can not found post with Id: " + id);
+    throw new Error("Can not found doc with Id: " + id);
   }
 }
 /*
@@ -26,6 +26,11 @@ option support settings
     index: need create index on this field
     
 */
+
+MongoDoc.updateById = function(id,col,doc,callback){
+  this.update(doc, {col:col,criteria:{"_id":new ObjectID(id)}}, callback)
+}
+
 MongoDoc.update = function (doc, option, callback){
   if (!option.col){
       err = new Error("Collection name must provided")
@@ -47,13 +52,12 @@ MongoDoc.update = function (doc, option, callback){
             if (err) {
                 console.error(err.message)
             }
-            callback(err, doc)
+            callback(err, doc.value)
           })
 }
 
 MongoDoc.findOne = function(col, criteria, callback) {
   db.collection(col).findOne(criteria,function(err,doc){
-      console.log("search result: ",doc) 
       if (err) {
           console.error(err)
       } 
@@ -61,7 +65,7 @@ MongoDoc.findOne = function(col, criteria, callback) {
   })
 }
 
-MongoDoc.search = function(col, criteria, callback) {
+MongoDoc.find = function(col, criteria, callback) {
   // ×xÈ¡ users ¼¯ºÏ
   db.collection(col).find(criteria).toArray(function(err,data){
       if (err) {

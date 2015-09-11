@@ -1,5 +1,7 @@
 var express = require('express');
 var crypto = require('crypto');
+var DBRef = require('mongodb').DBRef
+var ObjectID = require('mongodb').ObjectID
 var Post = require('../models/post');
 var mdoc = require('../models/MongoDoc');
 var User = require('../models/user.js');
@@ -39,6 +41,7 @@ router.post('/reg', function(req, res) {
     var newUser = {
         name: req.body.username,
         password: password,
+        email: req.body.email
     };
     
     //检查用户名是否已经存在
@@ -98,7 +101,7 @@ router.post('/login', function(req, res) {
         res.redirect(req.session.originalUrl);
         delete req.session.originalUrl
       } else {
-        res.redirect('/users/'+user.name);
+        res.redirect('/users/'+user._id);
       }
     });
   });
@@ -110,46 +113,81 @@ router.get('/logout', function(req, res) {
     res.redirect('/');
 });
   
-router.get('/users/:user', function(req, res) {
-    User.get(req.params.user, function(err, user) {
-      if (!user) {
-        req.session.error = '用戶不存在';
+router.get('/users', checkLogin);
+router.get('/users', function(req, res) {
+  mdoc.find('users', null, function(err,users){
+    res.render('users', {
+      title: '用户列表',
+      users: users
+    });
+  })
+});
+
+router.get('/users/:id/posts', function(req, res) {
+  var id = req.params.id;
+  mdoc.findById(id, 'users', function(err, user) {
+    if (!user) {
+      req.session.error = '用戶不存在';
+      return res.redirect('/');
+    }
+    
+    mdoc.find('posts', {user: id}, function(err, posts) {
+      if (err) {
+        req.session.error = err;
         return res.redirect('/');
       }
-      Post.get(user.name, function(err, posts) {
-        if (err) {
-          req.session.error = err;
-          return res.redirect('/');
-        }
-        res.render('user', {
-          title: user.name,
-          posts: posts,
-        });
+      console.log('posts found', posts);
+      res.render('userposts', {
+        title: user.name,
+        posts: posts,
       });
     });
+  });
 });
 
 router.get('/posts', checkLogin);
-router.get('/posts', function(req, res) {
-    res.render('postnew', {
-      title: '發表博客',
-    });
+//router.all('/posts/*', checkLogin);
+
+router.get('/:resource([a-z]+s)/new', function(req, res) {
+  resource = req.params.resource;
+  res.render(resource.slice(0,-1)+ '_new', {
+    title: 'new '+ resource,
+  });
 });
 
-router.all('/posts/:postid', checkLogin);
-router.get('/:resource/:postid', function(req, res) {
+function updateDoc(req,res){
+  doc= req.body;
+  console.log("put method modified post: ",doc);
   resource = req.params.resource;
-  mdoc.findById(req.params.postid, resource, function(err, doc){
+  mdoc.updateById(req.params.docId,resource,doc,function(err,doc){
+    if (err) {
+      req.session.error = err.message;
+    } else {
+      req.session.success = '修改成功';
+      res.render(resource.slice(0,-1), {
+        title: doc.title,
+        doc: doc
+      });
+    }
+  });
+}
+
+//RESTFUL API update
+router.put('/:resource([a-z]+s)/:docId([a-f0-9]+)', updateDoc)
+
+//show resource
+router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
+  console.log('in router get method /resource/docId');
+  resource = req.params.resource;
+  mdoc.findById(req.params.docId, resource, function(err, doc){
     if (err) {
       console.log(err)
-      throw new Error("can not found resource "+ resource +" with id " + req.params.postid)
+      throw new Error("can not found resource "+ resource +" with id " + req.params.docId)
+    }
+    if (!doc) {
+      req.session.error = 'resource does not exists';
     }
     
-    res.render(resource.slice(0,-1), {
-      title: doc.title,
-      post: doc
-    });
-      
     if (resource == 'posts') {
       if (doc.pv) {
         doc.pv = doc.pv + 1;
@@ -162,20 +200,50 @@ router.get('/:resource/:postid', function(req, res) {
         }
       })
     }
+    res.render(resource.slice(0,-1), {
+      title: doc.title,
+      doc: doc
+    });
   })
 });
 
-router.delete('posts/:postid', function(req, res) {
-  id = req.params.postid;
-  mdoc.findById(id, 'posts', function(err,post){
-    if (!post) {
-      throw new Error("no post with id : " + id + "to be deleted.")
-    } else {
-      mdoc.delById(id,"posts")
-    }
+//edit resource
+router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', function(req, res) {
+  resource = req.params.resource;
+  mdoc.findById(req.params.docId, resource, function(err, doc){
+    res.render(resource.slice(0,-1)+'_edit', {
+      title: 'edit',
+      doc: doc
+    });
   })
 })
 
+router.post('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', updateDoc)
+
+
+function delDoc(req, res){
+  resource = req.params.resource;
+  id = req.params.docId;
+  mdoc.findById(id, resource, function(err,post){
+    if (!post) {
+      throw new Error("no resource with id : " + id + "to be deleted.")
+    } else {
+      mdoc.delById(id, resource, function (err,doc) {
+        console.log(doc.deletedCount + 'document deleted.');
+        req.session.success = 'successfully deleted.'
+        res.redirect('/');
+      });
+    }
+  })
+}
+
+router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/delete', delDoc)
+
+//delete resource
+// RESTFUL API delete
+router.delete('/:resource([a-z]+s)/:docId([a-f0-9]+)', delDoc)
+
+//new resource
 router.post('/posts', checkLogin);
 router.post('/posts', function(req, res) {
     var user = req.session.user;
@@ -189,23 +257,10 @@ router.post('/posts', function(req, res) {
         return res.redirect('/');
       }
       req.session.success ='發表成功';
-      res.redirect('/users/' + user.name);
+      res.redirect('/users/' + user._id + '/posts');
     });
 });
 
-router.post('/post', checkLogin);
-router.post('/post', function(req, res) {
-    var currentUser = req.session.user;
-    var post = req.body;
-    Post.save(function(err) {
-      if (err) {
-        req.session.error = err;
-        return res.redirect('/');
-      }
-      req.session.success ='發表成功';
-      res.redirect('/users/' + currentUser.name);
-    });
-});
   
 function checkLogin(req, res, next) {
   if (!req.session.user) {

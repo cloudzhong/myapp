@@ -1,7 +1,16 @@
 extends layout
 
 block content
-  article 
-    h1= post.title
-    p= post.content
-  p 阅读次数 #{post.pv}
+  form(method="post",action="/posts/#{doc._id}/delete",onSubmit="javascript:return window.confirm('确认删除博客吗？')")
+    div 作者 
+      a(href="/users/#{doc.user}") #{doc.author}
+    div 发表于 #{doc.time}
+    article 
+      h4= "标签：" + doc.tag
+      h1= doc.title
+      p
+        pre= doc.content
+      if user && doc.author == user.name
+        a(href="/posts/#{doc._id}/edit") 修改
+        a(href="/posts/#{doc._id}/delete",onclick="if(confirm('确定删除?')==false) return false;") 删除
+    p 阅读次数 #{doc.pv}

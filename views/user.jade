@@ -1,6 +1,5 @@
 extends layout
 
 block content
-    if user
-        include say.jade
-    include posts.jade
+  h1 name #{doc.name}
+  h1 email: #{doc.email}

@@ -3,10 +3,10 @@ each post, index in posts
         | <div class="row">
     .span4
         h2
-            a(href="/users/#{post.user}") #{post.user} 說
+          a(href='/posts/#{post._id}')= post.title
         p
-            small= post.time
-        p
-          a(href='posts/#{post._id}')= post.post
+          small
+            a(href="/users/#{post.user}/posts") #{post.author} 
+            发表于  #{post.time}
     if index % 3 === 2 || index === posts.length - 1
         | </div>
