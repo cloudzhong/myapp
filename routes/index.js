@@ -1,8 +1,7 @@
 var gravatar = require('gravatar');
 var express = require('express');
 var crypto = require('crypto');
-var DBRef = require('mongodb').DBRef
-var ObjectID = require('mongodb').ObjectID
+var ObjectID = require('mongodb').ObjectID;
 var Post = require('../models/post');
 var mdoc = require('../models/MongoDoc');
 var User = require('../models/user.js');
@@ -20,13 +19,13 @@ router.get('/', function(req, res, next) {
 
 router.get('/reg', checkNotLogin);
 router.get('/reg', function(req, res) {
-    res.render('reg', {title: '用户注册' })
-    res.end
-})
+    res.render('reg', {title: '用户注册' });
+    res.end;
+});
 
 router.post('/reg', checkNotLogin);
 router.post('/reg', function(req, res) {
-    console.log("before register users..")
+    console.log("before register users..");
     //检验用户两次输入的口令是否一致
     if (req.body['password-repeat'] != req.body['password']) {
         req.session.error = '两次输入的口令不一致';
@@ -47,29 +46,29 @@ router.post('/reg', function(req, res) {
     User.get(newUser.name, function(err, user) {
         if (user) {
             err = 'Username already exists.';
-            console.log("User already exists : " + err)
+            console.log("User already exists : " + err);
             req.session.error = err;
             return res.redirect('/reg');
         }
         if (err) {
-            console.log("Error in get user : " + err)
+            console.log("Error in get user : " + err);
             req.session.error = err;
             return res.redirect('/reg');
         }
         //如果不存在则新增用户
         User.save(newUser,function(err,doc) {
             if (err) {
-                console.log("Error in save user : " + err)
+                console.log("Error in save user : " + err);
                 req.session.error = err;
                 return res.redirect('/reg');
             }
-            console.log(doc, " saved ")
+            console.log(doc, " saved ");
             req.session.user = newUser;
             req.session.success = '注册成功';
             res.redirect('/');
         });
     });
-    console.log("finish register users..")
+    console.log("finish register users..");
 });
 
 router.get('/login', checkNotLogin);
@@ -98,7 +97,7 @@ router.post('/login', function(req, res) {
       req.session.success = '登入成功';
       if (req.session.originalUrl) {
         res.redirect(req.session.originalUrl);
-        delete req.session.originalUrl
+        delete req.session.originalUrl;
       } else {
         res.redirect('/users/'+user._id);
       }
@@ -119,28 +118,28 @@ router.get('/users', function(req, res) {
       title: '用户列表',
       users: users
     });
-  })
+  });
 });
 
 router.get('/users/:id/posts', function(req, res) {
   var id = req.params.id;
   mdoc.find('users', {_id:new ObjectID(id)} ,function(err, userDoc) {
     if(!userDoc.length){
-      userDoc = [{name:"Not Found", email:"So I don't know"}]
+      userDoc = [{name:"Not Found", email:"So I don't know"}];
     }
     mdoc.find('posts', {user: id}, function(err, posts) {
       if (err) {
         req.session.error = err;
         return res.redirect('/');
       }
-      console.log('Found user: ', userDoc)
+      console.log('Found user: ', userDoc);
       res.render('userposts', {
         qUser: userDoc[0],
         title: '用户文章',
         posts: posts,
       });
     });
-  })
+  });
 });
 
 router.get('/posts', checkLogin);
@@ -159,7 +158,7 @@ function updateDoc(req,res){
   var resource = req.params.resource;
   var id = req.params.docId;
   if (resource == 'users'){
-    doc.avatar = gravatar.url(req.body.email)
+    doc.avatar = gravatar.url(req.body.email);
   }
   mdoc.updateById(id, resource,doc,function(err,doc){
     if (err) {
@@ -172,7 +171,7 @@ function updateDoc(req,res){
 }
 
 //RESTFUL API update
-router.put('/:resource([a-z]+s)/:docId([a-f0-9]+)', updateDoc)
+router.put('/:resource([a-z]+s)/:docId([a-f0-9]+)', updateDoc);
 
 //show resource
 router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
@@ -180,8 +179,8 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
   var resource = req.params.resource;
   mdoc.findById(req.params.docId, resource, function(err, doc){
     if (err) {
-      console.log(err)
-      throw new Error("can not found resource "+ resource +" with id " + req.params.docId)
+      console.log(err);
+      throw new Error("can not found resource "+ resource +" with id " + req.params.docId);
     }
     if (!doc) {
       req.session.error = resource.slice(0,-1) + ' does not exists';
@@ -198,13 +197,13 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
         if (err) {
           throw err;
         }
-      })
+      });
     }
     res.render(resource.slice(0,-1), {
       title: doc.title,
       doc: doc
     });
-  })
+  });
 });
 
 //edit resource
@@ -215,10 +214,10 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', function(req, res) {
       title: 'edit',
       doc: doc
     });
-  })
-})
+  });
+});
 
-router.post('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', updateDoc)
+router.post('/:resource([a-z]+s)/:docId([a-f0-9]+)/edit', updateDoc);
 
 router.post('/posts/:docId([a-f0-9]+)/comments', function(req,res){
  
@@ -238,38 +237,38 @@ router.post('/posts/:docId([a-f0-9]+)/comments', function(req,res){
       return res.redirect(req.originalUrl);
     }
     res.redirect('/posts/' + id);
-  })
-})
+  });
+});
 
 function delDoc(req, res){
   var resource = req.params.resource;
   var id = req.params.docId;
   mdoc.findById(id, resource, function(err,doc){
     if (!doc) {
-      throw new Error("no resource with id : " + id + "to be deleted.")
+      throw new Error("no resource with id : " + id + "to be deleted.");
     } else {
       mdoc.delById(id, resource, function (err,doc) {
         console.log(doc.deletedCount + 'document deleted.');
-        req.session.success = 'successfully deleted.'
+        req.session.success = 'successfully deleted.';
         res.redirect('/');
       });
     }
-  })
+  });
 }
 
-router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/delete', delDoc)
+router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)/delete', delDoc);
 
 //delete resource
 // RESTFUL API delete
-router.delete('/:resource([a-z]+s)/:docId([a-f0-9]+)', delDoc)
+router.delete('/:resource([a-z]+s)/:docId([a-f0-9]+)', delDoc);
 
 //new resource
 router.post('/posts', checkLogin);
 router.post('/posts', function(req, res) {
     var user = req.session.user;
     var post = req.body;
-    post.tags
-    console.log(post, "post data to /posts ??? ")
+    post.tags;
+    console.log(post, "post data to /posts ??? ");
 
     Post.save(user, post, function(err, doc) {
       if (err) {
