@@ -1,19 +1,19 @@
 doctype html
 html
     head
-        title= title + "- Microblog"
+        title= title + "- CloudBlog"
+        link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/appstyle.css')
-        link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     body
         nav(class="navbar navbar-default")
           div(class="container-fluid")
             div(class="navbar-header")
-                button(type="button",class="navbar-toggle collapsed",data-toggle="collapse",data-target=".navbarCollapse",aria-expanded="false")
+                button(type="button",class="navbar-toggle collapsed",data-toggle="collapse",data-target="#menu",aria-expanded="false")
                     span(class="icon-bar")
                     span(class="icon-bar")
                     span(class="icon-bar")
                 a(class="navbar-brand" href="/") CloudBlog
-            div(class="collapse navbar-collapse navbarCollapse")
+            div(class="collapse navbar-collapse",id="menu")
                 ul(class="nav navbar-nav")
                     li(class="active")
                             a(href="/") 
@@ -43,8 +43,8 @@ html
         footer
             p   <a href="http://www.cloudzhong.com/" target="_blank">Cloud Zhong</a> 2015
     
-        script(src="/javascripts/jquery.js")
-        script(src="/javascripts/bootstrap.js")
+        script(src="/javascripts/jquery.min.js")
+        script(src="/javascripts/bootstrap.min.js")
         script(type='text/javascript').
             $(".nav a").on("click", function(){
                $(".nav").find(".active").removeClass("active");
