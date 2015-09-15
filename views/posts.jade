@@ -1,14 +1,15 @@
-each post, index in posts
-    if index % 3 === 0 
-        | <div class="row">
-    .span4
-        h2
-          a(href='/posts/#{post._id}')= post.title
-        p
-          small
-            a(href="/users/#{post.user}/posts") #{post.author} 
-            发表于  #{post.time}
-        p
-          阅读 #{post.pv} 评论 #{post.comments.length}
-    if index % 3 === 2 || index === posts.length - 1
-        | </div>
+container  
+  each post, index in posts
+      if index % 3 === 0 
+          | <div class="row">
+      .col-md-4
+          h2
+            a(href='/posts/#{post._id}')= post.title
+          p
+            small
+              a(href="/users/#{post.user}/posts") #{post.author} 
+              发表于  #{moment(post.time).fromNow()}
+          p
+            阅读 #{post.pv} 评论 #{post.comments.length}
+      if index % 3 === 2 || index === posts.length - 1
+          | </div>

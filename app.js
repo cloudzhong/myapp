@@ -8,7 +8,7 @@ var session = require('express-session');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-
+var moment = require("moment");
 var app = express();
 
 require('./models/db')
@@ -31,6 +31,7 @@ app.use(session({ resave: false,
 // Every response automatically have user, message.
 app.use(function(req,res,next){
     res.locals.user = req.session.user;
+    res.locals.moment = moment;
     if (req.session.success) {
         res.locals.success = req.session.success;
         delete req.session.success

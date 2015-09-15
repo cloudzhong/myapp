@@ -7,6 +7,7 @@ var mdoc = require('../models/MongoDoc');
 var User = require('../models/user.js');
 var router = express.Router();
 
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
     Post.get(null, function(err, posts) {
@@ -99,7 +100,7 @@ router.post('/login', function(req, res) {
         res.redirect(req.session.originalUrl);
         delete req.session.originalUrl;
       } else {
-        res.redirect('/users/'+user._id);
+        res.redirect('/users/'+user._id +'/posts');
       }
     });
   });
@@ -132,7 +133,6 @@ router.get('/users/:id/posts', function(req, res) {
         req.session.error = err;
         return res.redirect('/');
       }
-      console.log('Found user: ', userDoc);
       res.render('userposts', {
         qUser: userDoc[0],
         title: '用户文章',
@@ -198,6 +198,7 @@ router.get('/:resource([a-z]+s)/:docId([a-f0-9]+)', function(req, res) {
           throw err;
         }
       });
+      
     }
     res.render(resource.slice(0,-1), {
       title: doc.title,
@@ -243,6 +244,7 @@ router.post('/posts/:docId([a-f0-9]+)/comments', function(req,res){
 function delDoc(req, res){
   var resource = req.params.resource;
   var id = req.params.docId;
+  console.log('delete doc',id);
   mdoc.findById(id, resource, function(err,doc){
     if (!doc) {
       throw new Error("no resource with id : " + id + "to be deleted.");

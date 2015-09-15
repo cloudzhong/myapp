@@ -4,10 +4,11 @@ block content
     div 作者 
       a(href="/users/#{doc.user}") #{doc.author}
       img(src='#{doc.avatar}?s=48')
-    div 发表于 #{doc.time}
-    article 
-      h4= "标签：" + doc.tag
-      h1= doc.title
+    div 发表于 #{moment(doc.time).fromNow()}
+    article
+      header
+        h4= "标签：" + doc.tag
+        h1= doc.title
       p
         pre= doc.content
       if user && doc.author == user.name
@@ -19,19 +20,14 @@ block content
         p
           img(src="#{comment.avatar}?s=30") 
           a(href="#{comment.website}") #{comment.name}
-          span 回复于 #{comment.time}
+          span 评论于 #{moment(comment.time).fromNow()}
         p= comment.content
     
     form(method="post" action="/posts/#{doc._id}/comments")
       if user
-        姓名：
-        input(type="text" name="name" value="#{user.name}" readonly="readonly")
-        br
-        邮箱：
-        input(type="text" name="email" value="#{user.email}" readonly="readonly")
-        br
-        网址：
-        input(type="text" name="website" value="/users/#{user._id}" readonly="readonly")
+        input(type="hidden" name="name" value="#{user.name}")
+        input(type="hidden" name="email" value="#{user.email}")
+        input(type="hidden" name="website" value="/users/#{user._id}")
         br
       else 
         姓名：

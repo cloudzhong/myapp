@@ -2,7 +2,7 @@ var ObjectID = require('mongodb').ObjectID
 var DBRef = require('mongodb').DBRef
 var docName = "posts"
 exports.save = function (user, data, cb) {
-  console.log('user is ',user)
+  console.log('in save post, user is ',user)
   var doc = {
     user: user._id,
     author: user.name,
