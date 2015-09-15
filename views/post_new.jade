@@ -2,22 +2,23 @@ extends layout
 
 block content
     form(class="form-horizontal" method="post" action="/posts")
-      fieldset
-        legend 發表博客
         div(class="form-group")
-            label(class="col-sm-2 control-label" for="title") 标题：
-            .col-sm-10
-                input(type="text",class="form-control",id="title",required="required")
+            h3(class="col-sm-offset-1 col-sm-1") 發表博客
+        div(class="form-group")
+            label(class="col-sm-1 control-label" for="title") 标题：
+            .col-sm-3
+                input(type="text",class="form-control",id="title",name="title",required="required")
   
         div(class="form-group")
-            label(class="col-sm-2 control-label" for="tag") 标签：
-            .col-sm-10
-                input(type="text",class="form-control",id="tag")
+            label(class="col-sm-1 control-label" for="tag") 标签：
+            .col-sm-3
+                input(type="text",class="form-control",id="tag",name="title")
                     
         div(class="form-group")
-            label(class="col-sm-2 control-label" for="content") 正文：
-            .col-sm-10
-                textarea(id='content', name="content",rows="20",cols="100",required="required")
+            label(class="col-sm-1 control-label" for="content") 正文：
+            .col-sm-3
+                textarea(class="form-control",id='content', name="content",rows="20",required="required")
+                
         div(class="form-group")
-            div(class="col-sm-offset-2 col-sm-10")
+            div(class="col-sm-offset-1 col-sm-1")
                 button(type="submit",class="btn btn-primary") 發表

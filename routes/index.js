@@ -33,6 +33,7 @@ router.post('/reg', function(req, res) {
         return res.redirect('/reg');
     }
 
+console.log(req.body);
     //生成口令的散列值
     var md5 = crypto.createHash('md5');
     var password = md5.update(req.body.password).digest('base64');
