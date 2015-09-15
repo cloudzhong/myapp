@@ -4,19 +4,20 @@ block content
     form(class="form-horizontal" method="post" action="/posts")
       fieldset
         legend 發表博客
-        div(class="control-group")
-            label(class="control-label", for="title") 标题：
-            div(class="controls")
-                input(type="text",class="input-xlarge",id="title",name="title", required="required")
+        div(class="form-group")
+            label(class="col-sm-2 control-label" for="title") 标题：
+            .col-sm-10
+                input(type="text",class="form-control",id="title",required="required")
   
-        div(class="control-group")
-            label(class="control-label" for="tag") 标签：
-            div(class="controls")
-                input(type="text",class="input-xlarge",id="tag",name="tag")
+        div(class="form-group")
+            label(class="col-sm-2 control-label" for="tag") 标签：
+            .col-sm-10
+                input(type="text",class="form-control",id="tag")
                     
-        div(class="control-group")
-            label(class="control-label" for="content") 正文：
-            div(class="controls")
-                textarea(id='content', name="content",rows="20",cols="60",required="required")
-        p
-            button(type="submit",class="btn btn-primary") 發表
+        div(class="form-group")
+            label(class="col-sm-2 control-label" for="content") 正文：
+            .col-sm-10
+                textarea(id='content', name="content",rows="20",cols="100",required="required")
+        div(class="form-group")
+            div(class="col-sm-offset-2 col-sm-10")
+                button(type="submit",class="btn btn-primary") 發表

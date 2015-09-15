@@ -4,25 +4,26 @@ block content
     form(class="form-horizontal" method="post")
         fieldset
             legend 用户注册
-            div(class="control-group")
-                label(class="control-label" , for="username") 用户名
-                div(class="controls")
-                    input(type="text",class="input-xlarge",id="username",name="username",required="required")
-                    p(class="help-block") 你的账户名称，用于登录和显示。
-            div(class="control-group")
-                label(class="control-label" , for="email") email
-                div(class="controls")
-                    input(type="text",class="input-xlarge",id="email",name="email",required="required")
-                    p(class="help-block") 电子邮箱  
-            div(class="control-group")
-                label(class="control-label" for="password") 口令
-                div(class="controls")
-                    input(type="password",class="input-xlarge",id="password",name="password",required="required")
+            div(class="form-group")
+                label(class="col-sm-2 control-label" , for="username") 用户名
+                .col-sm-3
+                    input(type="text",class="form-control",id="username",required="required")
+                    span(class="help-block") 你的账户名称，用于登录和显示。
+            div(class="form-group")
+                label(class="col-sm-2 control-label" , for="email") email
+                .col-sm-3
+                    input(type="email",class="form-control",id="email",required="required")
+                    span(class="help-block") 电子邮箱  
+            div(class="form-group")
+                label(class="col-sm-2 control-label" for="password") 口令
+                .col-sm-3
+                    input(type="password",class="form-control",id="password",required="required")
                         
-            div(class="control-group")
-                label(class="control-label",for="password-repeat") 重复输入口令
-                div(class="controls")
-                    input(type="password",class="input-xlarge",id="password-repeat",name="password-repeat",required="required")
+            div(class="form-group")
+                label(class="col-sm-2 control-label",for="password-repeat") 重复输入口令
+                .col-sm-3
+                    input(type="password",class="form-control",id="password-repeat",required="required")
 
-            div(class="form-actions")
-                button(type="submit",class="btn btn-primary") 注册
+            div(class="form-group")
+                div(class="col-sm-offset-2 col-sm-3")
+                    button(type="submit",class="btn btn-primary") 注册
