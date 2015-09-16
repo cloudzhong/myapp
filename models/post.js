@@ -1,8 +1,9 @@
-var ObjectID = require('mongodb').ObjectID
-var DBRef = require('mongodb').DBRef
-var docName = "posts"
+/*global db*/
+var ObjectID = require('mongodb').ObjectID;
+var POSTS = "posts";
+
 exports.save = function (user, data, cb) {
-  console.log('in save post, user is ',user)
+  console.log('in save post, user is ',user);
   var doc = {
     user: user._id,
     author: user.name,
@@ -15,7 +16,7 @@ exports.save = function (user, data, cb) {
     pv: 0
   };
     // 讀取 posts 集合
-    var col = db.collection('posts')
+    var col = db.collection(POSTS);
     // 爲 user 屬性添加索引
     col.createIndex('user');
     // 寫入 post 文檔
@@ -25,33 +26,33 @@ exports.save = function (user, data, cb) {
 };
 
 exports.comments = function(id, comment, callback){
-  db.collection('posts').updateOne({_id:new ObjectID(id)},
+  db.collection(POSTS).updateOne({_id:new ObjectID(id)},
     {"$push": {comments: comment}}, 
     function (err, doc){
       if (err) {
         console.error('***********Error in add comments: ',err.message);
-        return callback(err, null)
+        return callback(err, null);
       }
-      callback(err, doc.value)
-  })
-}
+      callback(err, doc.value);
+  });
+};
 
 exports.updateById = function (id, doc, callback) {
-  db.collection(docName).findOneAndUpdate( {"_id":new ObjectID(id)},
+  db.collection(POSTS).findOneAndUpdate( {"_id":new ObjectID(id)},
       {$set: doc} ,
       {returnOriginal:false},
       function(err, doc) {
         if (err) {
-            console.error(err.message)
+            console.error(err.message);
         }
-        console.log(doc," is the new post")
-        callback(err, doc)
-      })
-}
+        console.log(doc," is the new post");
+        callback(err, doc);
+      });
+};
 
 exports.get = function (username, callback) {
     
-    var col = db.collection('posts')
+    var col = db.collection(POSTS);
     // 查找 user 屬性爲 username 的文檔，如果 username 是 null 則匹配全部
     var query = {};
     if (username) {
@@ -61,8 +62,6 @@ exports.get = function (username, callback) {
     if (err) {
       callback(err, null);
     }
-    // 封裝 posts 爲 Post 對象
-    var posts = [];
     /*
     docs.forEach(function(doc, index) {
       posts.push(doc);
@@ -74,13 +73,13 @@ exports.get = function (username, callback) {
 
 exports.getbyId = function (id, callback) {
     
-    var col = db.collection('posts')
+    var col = db.collection(POSTS);
     // 查找 user 屬性爲 username 的文檔，如果 username 是 null 則匹配全部
     var query = {"_id":new ObjectID(id)};
     col.findOne(query,function(err,doc){
       if (err) {
          callback(err, null);
       } 
-      callback(null,doc)
-  })
+      callback(null,doc);
+  });
 };
