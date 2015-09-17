@@ -9,8 +9,7 @@ block content
       header
         h4= "标签：" + doc.tag
         h1= doc.title
-      p= doc.content
-      p= 'This code is <escaped>!'
+      p(style='white-space:pre;')= doc.content
       if user && doc.author == user.name
         a(href="/posts/#{doc._id}/edit") 修改
         a(href="/posts/#{doc._id}/delete",onclick="if(confirm('确定删除?')==false) return false;") 删除
