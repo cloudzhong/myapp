@@ -2,17 +2,19 @@ extends layout
 
 block content
   form(class="form-horizontal" method="post")
-    fieldset
-      legend 修改用户
-      div(class="control-group")
-          label(class="control-label" , for="name") 用户名：
-          div(class="controls")
-              input(type="text",class="input-xlarge",id="name",name="name",value="#{doc.name}")
+      div(class="form-group")
+          h3(class="col-sm-offset-1 col-sm-1") 修改用户
+          
+      div(class="form-group")
+          label(class="col-sm-1 control-label", for="name") 用户名：
+          div(class="col-sm-3")
+              input(type="text",class="form-control",id="name",name="name",value="#{doc.name}")
 
-      div(class="control-group")
-          label(class="control-label" for="email") 邮箱：
-          div(class="controls")
-              input(type="text",class="input-xlarge",id="email",name="email",value="#{doc.email}")
+      div(class="form-group")
+          label(class="col-sm-1 control-label", for="email") 邮箱：
+          div(class="col-sm-3")
+              input(type="email",class="form-control",id="email",name="email",value="#{doc.email}")
      
-      div(class="form-actions")
+      div(class="form-group")
+        div(class="col-sm-offset-1 col-sm-1")
           button(type="submit",class="btn btn-primary") 修改

@@ -2,7 +2,7 @@ doctype html
 html
     head
         title= title + "- CloudBlog"
-        link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+        link(rel='stylesheet', href='//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css')
         link(rel='stylesheet', href='/stylesheets/appstyle.css')
     body
         nav(class="navbar navbar-default")
@@ -43,8 +43,9 @@ html
         footer
             p   <a href="http://www.cloudzhong.com/" target="_blank">Cloud Zhong</a> 2015
     
-        script(src="/javascripts/jquery.min.js")
-        script(src="/javascripts/bootstrap.min.js")
+        script(src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js")
+        script(src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js")
+        //script(src="//cdn.bootcss.com/angular.js/1.4.5/angular.js")
         script(type='text/javascript').
             $(".nav a").on("click", function(){
                $(".nav").find(".active").removeClass("active");

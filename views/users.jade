@@ -2,20 +2,26 @@ extends layout
 
 block content
   table(class="table table-striped")
-    tr
-      th 姓名
-      th 邮箱
-      th
-      th
-      th
-    each user in users.length ? users : ['There are no users']
+    thead
       tr
-        td
-          a(href='/users/#{user._id}') #{user.name}
-        td= user.email
-        td
-          img(src='#{user.avatar}?s=48')
+        th 姓名
+        th 邮箱
         th
-          a(href='/users/#{user._id}/edit') edit
-        td 
-          a(href='/users/#{user._id}/delete') delete
+        th
+        th
+    tbody
+      each user in users.length ? users : ['There are no users']
+        tr
+          td
+            a(href='/users/#{user._id}') #{user.name}
+          td= user.email
+          td
+            img(src='#{user.avatar}?s=48')
+          td
+            a(href='/users/#{user._id}/edit')
+              span(class="glyphicon glyphicon-pencil",aria-hidden="true")
+              |&nbsp;&nbsp;edit
+          td 
+            a(href='/users/#{user._id}/delete') 
+              span(class="glyphicon glyphicon-remove",aria-hidden="true")
+              |&nbsp;&nbsp;delete
