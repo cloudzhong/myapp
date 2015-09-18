@@ -9,6 +9,8 @@ block content
             a(class="btn btn-primary btn-large", href="/login") 登錄 
             a(class="btn btn-large", href="/reg") 立即註冊
     else
-        a(href='/posts/new') 发表新文章
+        div.row
+            div(class="col-sm-2")
+                 a(class="btn btn-primary",href='/posts/new') 发表新文章
     include posts.jade
 
