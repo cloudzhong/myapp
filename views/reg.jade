@@ -2,28 +2,28 @@ extends layout
 
 block content
     form(class="form-horizontal" method="post")
-        fieldset
-            legend 用户注册
-            div(class="form-group")
-                label(class="col-sm-2 control-label" , for="username") 用户名
-                .col-sm-3
-                    input(type="text",class="form-control",id="username",name="username",required="required")
-                    span(class="help-block") 你的账户名称，用于登录和显示。
-            div(class="form-group")
-                label(class="col-sm-2 control-label" , for="email") email
-                .col-sm-3
-                    input(type="email",class="form-control",id="email",name="email",required="required")
-                    span(class="help-block") 电子邮箱  
-            div(class="form-group")
-                label(class="col-sm-2 control-label" for="password") 口令
-                .col-sm-3
-                    input(type="password",class="form-control",id="password",name="password",required="required")
-                        
-            div(class="form-group")
-                label(class="col-sm-2 control-label",for="password-repeat") 重复输入口令
-                .col-sm-3
-                    input(type="password",class="form-control",id="password-repeat",name="password-repeat",required="required")
+        div(class="form-group")
+            h3(class="page-header") 用户注册
+        div(class="form-group")
+            label(class="col-sm-2 control-label" , for="username") 用户名
+            .col-sm-3
+                input(type="text",class="form-control",id="username",name="username",required="required")
+                span(class="help-block") 你的账户名称，用于登录和显示。
+        div(class="form-group")
+            label(class="col-sm-2 control-label" , for="email") email
+            .col-sm-3
+                input(type="email",class="form-control",id="email",name="email",required="required")
+                span(class="help-block") 电子邮箱  
+        div(class="form-group")
+            label(class="col-sm-2 control-label" for="password") 口令
+            .col-sm-3
+                input(type="password",class="form-control",id="password",name="password",required="required")
+                    
+        div(class="form-group")
+            label(class="col-sm-2 control-label",for="password-repeat") 重复输入口令
+            .col-sm-3
+                input(type="password",class="form-control",id="password-repeat",name="password-repeat",required="required")
 
-            div(class="form-group")
-                div(class="col-sm-offset-2 col-sm-3")
-                    button(type="submit",class="btn btn-primary") 注册
+        div(class="form-group")
+            div(class="col-sm-offset-2 col-sm-3")
+                button(type="submit",class="btn btn-primary") 注册
