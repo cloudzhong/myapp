@@ -2,8 +2,8 @@ extends layout
 
 block content
     if user
-      a(href='/posts/new') 发表新文章
-    h1 name: #{qUser.name}
-    h1 email: #{qUser.email}
+      a(href='/posts/new' class="btn btn-primary") 发表新文章
+    h3 name: #{qUser.name}
+    h3 email: #{qUser.email}
     img(src='#{qUser.avatar}?s=400')
     include posts.jade

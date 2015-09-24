@@ -1,22 +1,27 @@
 var obj = require('./MongoDoc')
 
-/*
-obj.findOne('part', {name: '100000004'}, function(err,doc){
-     console.log('**********************  Found : \n',doc)
-})
-*/
 
-var modified = {type:'Color Part', name:'123456789',revision:'002',description:'test three'}
-obj.update( modified, {col:'part', index:'name', criteria:{name:'123456789'}}, function(err,doc){
-    console.log('***********************   Updated Document:   \n',doc)
-})
+var MongoClient = require('mongodb').MongoClient
 
-obj.search('part',{name:'100000004'},function(err,data){
-    for(var i=0; i< data.length; i++){
-        console.log('name: ', data[i].name)
+MongoClient.connect('mongodb://localhost:27017/plm', function(err, database) {
+    if (err) throw err
+    db = database;
+
+    var modified = {
+        type: 'Mechincal Part',
+        name: '000000003',
+        revision: '002',
+        description: 'test insert'
     }
-})
 
-obj.del('part',{name:'100000004'},function(err,data){
-    console.log("deleted : ",data)
+    obj.createIndex("parts", {"type":1, "name":1, "revision":1} , true);
+    obj.save("parts", modified,  function(err, doc) {
+        if (err) {
+            console.log(err)
+        }
+        
+    console.log(" part saved")
+    })
+
+
 })

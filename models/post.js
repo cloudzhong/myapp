@@ -1,5 +1,7 @@
 /*global db*/
 var ObjectID = require('mongodb').ObjectID;
+var monDoc = require('./MongoDoc');
+
 var POSTS = "posts";
 
 exports.save = function (user, data, cb) {
@@ -15,14 +17,13 @@ exports.save = function (user, data, cb) {
     comments: [],
     pv: 0
   };
-    // 讀取 posts 集合
-    var col = db.collection(POSTS);
-    // 爲 user 屬性添加索引
-    col.createIndex('user');
-    // 寫入 post 文檔
-    col.insert(doc, {safe: true}, function(err, post) {
-         cb(err, post);
-    });
+  
+  monDoc.createIndex(POSTS,'user',false);
+  monDoc.save(POSTS,doc,function(err,doc){
+    if (err)
+      console.error("Error in save posts: " , err);
+    cb(err,doc);
+  });
 };
 
 exports.comments = function(id, comment, callback){
@@ -38,16 +39,7 @@ exports.comments = function(id, comment, callback){
 };
 
 exports.updateById = function (id, doc, callback) {
-  db.collection(POSTS).findOneAndUpdate( {"_id":new ObjectID(id)},
-      {$set: doc} ,
-      {returnOriginal:false},
-      function(err, doc) {
-        if (err) {
-            console.error(err.message);
-        }
-        console.log(doc," is the new post");
-        callback(err, doc);
-      });
+  monDoc.updateById(id,doc,callback);
 };
 
 exports.get = function (username, callback) {

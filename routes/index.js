@@ -10,7 +10,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    Post.get(null, function(err, posts) {
+    mdoc.find('posts', null, {time:-1},function(err, posts) {
       res.render('index', {
         title: '首頁',
         posts: posts,
@@ -125,17 +125,17 @@ router.get('/users', function(req, res) {
 
 router.get('/users/:id/posts', function(req, res) {
   var id = req.params.id;
-  mdoc.find('users', {_id:new ObjectID(id)} ,function(err, userDoc) {
-    if(!userDoc.length){
-      userDoc = [{name:"Not Found", email:"So I don't know"}];
+  mdoc.findOne('users', {_id:new ObjectID(id)} ,function(err, userDoc) {
+    if(!userDoc){
+      userDoc = {name:"Not Found", email:"So I don't know"};
     }
-    mdoc.find('posts', {user: id}, function(err, posts) {
+    mdoc.find('posts', {user: id}, {time:-1},function(err, posts) {
       if (err) {
         req.session.error = err;
         return res.redirect('/');
       }
       res.render('userposts', {
-        qUser: userDoc[0],
+        qUser: userDoc,
         title: '用户文章',
         posts: posts,
       });

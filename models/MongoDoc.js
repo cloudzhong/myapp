@@ -1,90 +1,95 @@
-var ObjectID = require('mongodb').ObjectID
+var ObjectID = require('mongodb').ObjectID;
+/*global db*/
 
-function MongoDoc() {
-}
-module.exports = MongoDoc
-
-
-MongoDoc.updateById = function (id, col, doc, callback){
-  
-  this.update(doc,{'col':col, 'criteria': {"_id":new ObjectID(id)}},callback)
-}
-
-MongoDoc.findById = function (id, col, callback) {
-  try {
-  this.findOne(col, {"_id":new ObjectID(id)}, callback);
-  } catch (err) {
-    throw new Error("Can not found doc with Id: " + id);
-  }
-}
-/*
-option support settings
-    col:collection  
-    criteria: condition
-    upsert : will insert the document if not exists
-    index: need create index on this field
-    
-*/
-
-MongoDoc.update = function (doc, option, callback){
-  if (!option.col){
-      err = new Error("Collection name must provided")
-      callback(err, null)
-  } else if (!option.criteria) {
-      err = new Error("criteria must provided")
-      callback(err, null)
-  }
-    var willcreate = option.upsert?option.upsert:false
-    var collect = db.collection(option.col)
-    if (option.index) {
-        collect.createIndex(option.index, {unique: true} )
-        console.log('index on collection :' + option.col + " created index : " + option.index)
+this.updateById = function(id, col, doc, callback) {
+  update(doc, {
+    'col': col,
+    'criteria': {
+      "_id": new ObjectID(id)
     }
-    collect.findOneAndUpdate(option.criteria,
-        {$set: doc} ,
-        {upsert:willcreate,returnOriginal:false},
-          function(err, doc) {
-            if (err) {
-                console.error('***********Error in update document: ',err.message);
-                return callback(err, null)
-            }
-            callback(err, doc.value)
-          })
+  }, callback);
+};
+
+this.findById = function(id, col, callback) {
+    this.findOne(col, {
+      "_id": new ObjectID(id)
+    }, callback);
+};
+
+function update(doc, option, callback) {
+  var err = null;
+  if (!option.col) {
+    err = new Error("Collection name must provided");
+    return callback(err, null);
+  }
+  else if (!option.criteria) {
+    err = new Error("criteria must provided");
+    return callback(err, null);
+  }
+  var upsert = option.upsert ? option.upsert : false;
+
+  db.collection(option.col).findOneAndUpdate(option.criteria, {
+      $set: doc
+    }, {
+      upsert: upsert,
+      returnOriginal: false
+    },
+    function(err, doc) {
+      if (err) {
+        console.error('***********Error in update document: ', err.message);
+        return callback(err, null);
+      }
+      return callback(err, doc.value);
+    });
 }
 
-MongoDoc.findOne = function(col, criteria, callback) {
-  db.collection(col).findOne(criteria,function(err,doc){
-      if (err) {
-          console.error(err);
-          return callback(err, null);
-      } 
-      callback(err,doc);
+this.findOne = function(col, criteria, callback) {
+  db.collection(col).findOne(criteria, function(err, doc) {
+    if (err) {
+      console.error(err);
+      return callback(err, null);
+    }
+    callback(err, doc);
   })
 }
 
-MongoDoc.find = function(col, criteria, callback) {
-  // 讀取 users 集合
-  db.collection(col).find(criteria).toArray(function(err,data){
-      if (err) {
-          console.error(err);
-          return callback(err, null);
-      } 
-
-      callback(err,data);
+this.find = function(col, criteria, sort, callback) {
+  var cur = db.collection(col).find(criteria);
+  if (sort)
+    cur.sort(sort)
+  cur.toArray(function(err, data) {
+    if (err) {
+      console.error(err);
+      return callback(err, null);
+    }
+    callback(err, data);
   })
 }
 
-MongoDoc.delById = function(id,col,callback){
-  this.del(col, {"_id":new ObjectID(id)}, callback)
+this.delById = function(id, col, callback) {
+  this.del(col, {
+    "_id": new ObjectID(id)
+  }, callback)
 }
 
-MongoDoc.del = function(col, criteria, callback) {
-  // 讀取 users 集合
-  db.collection(col).deleteOne(criteria, function(err,data){
-      if (err) {
-          console.error(err);
-          return callback(err, null);
-      } 
-      callback(err,data);
+function del(col, criteria, callback) {
+  db.collection(col).deleteOne(criteria, function(err, data) {
+    if (err) {
+      console.error(err);
+      return callback(err, null);
+    }
+    callback(err, data);
   })
+}
+
+
+this.save = function (col, doc, cb) {
+    var col = db.collection(col);
+    col.insert(doc, {safe: true}, function(err, result) {
+         cb(err, result);
+    });
+};
+
+this.createIndex = function(col,index,unique){
+    db.collection(col).createIndex(index,{unique:unique});
 }
