@@ -54,10 +54,8 @@ this.findOne = function(col, criteria, callback) {
 }
 
 this.find = function(col, criteria, sort, callback) {
-  var cur = db.collection(col).find(criteria);
-  if (sort)
-    cur.sort(sort)
-  cur.toArray(function(err, data) {
+
+  db.collection(col).find(criteria).toArray(function(err,data){
     if (err) {
       console.error(err);
       return callback(err, null);
@@ -65,6 +63,28 @@ this.find = function(col, criteria, sort, callback) {
     callback(err, data);
   })
 }
+
+function getCursor(col, criteria, sort, skip, limit) {
+  console.log("in get cursor", col, criteria, sort, skip, limit);
+  var cur = db.collection(col).find(criteria);
+  if (sort)
+    cur.sort(sort);
+  if (skip)
+    cur.skip(skip);
+  return cur.limit(limit);
+}
+
+this.getPage = function(col, criteria, page, size, sort, callback){
+  db.collection(col).count(criteria,function(err, count){
+    getCursor(col, criteria, sort, (page-1)*size, size).toArray(function(err, data) {
+      if (err) {
+        console.error(err);
+        return callback(err, null);
+      }
+      callback(err, data, count);
+    });
+  });
+};
 
 this.delById = function(id, col, callback) {
   this.del(col, {

@@ -25,3 +25,17 @@ block content
             a(href='/users/#{user._id}/delete') 
               span(class="glyphicon glyphicon-remove",aria-hidden="true")
               |&nbsp;&nbsp;delete
+        
+      tr
+        td
+        td
+        td
+        td 
+            if page > 1
+              span
+                a(title="上一页" href="?p=#{page-1}") 上一页
+        td        
+            if page < total/size
+              span
+                a(title="下一页" href="?p=#{page+1}") 下一页
+        

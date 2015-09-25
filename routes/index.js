@@ -10,10 +10,18 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    mdoc.find('posts', null, {time:-1},function(err, posts) {
+   var page = req.query.p ? parseInt(req.query.p, 10) : 1;
+   var size = req.query.s ? parseInt(req.query.s, 10) : 9;
+   
+   console.log("display page : " , page , "with page limit ", size);
+    mdoc.getPage('posts', null, page, size, {time:-1},function(err, posts,count) {
+      console.log("total is ", count,  "total /size is ", count/size);
       res.render('index', {
         title: '首頁',
         posts: posts,
+        page: page,
+        size: size,
+        total:count
       });
     });
 });
@@ -115,21 +123,29 @@ router.get('/logout', function(req, res) {
   
 router.get('/users', checkLogin);
 router.get('/users', function(req, res) {
-  mdoc.find('users', null, function(err,users){
+  var page = req.query.p ? parseInt(req.query.p, 10) : 1;
+  var size = req.query.s ? parseInt(req.query.s, 10) : 4;
+  mdoc.getPage('users', null, page, size, null,function(err, users, count){
     res.render('users', {
       title: '用户列表',
-      users: users
+      users: users,
+      page: page,
+      size: size,
+      total:count
     });
   });
 });
 
 router.get('/users/:id/posts', function(req, res) {
   var id = req.params.id;
+  var page = req.query.p ? parseInt(req.query.p, 10) : 1;
+  var size = req.query.s ? parseInt(req.query.s, 10) : 9;
+   
   mdoc.findOne('users', {_id:new ObjectID(id)} ,function(err, userDoc) {
     if(!userDoc){
       userDoc = {name:"Not Found", email:"So I don't know"};
     }
-    mdoc.find('posts', {user: id}, {time:-1},function(err, posts) {
+    mdoc.getPage('posts', {user: id}, page, size, {time:-1},function(err, posts,count) {
       if (err) {
         req.session.error = err;
         return res.redirect('/');
@@ -138,6 +154,9 @@ router.get('/users/:id/posts', function(req, res) {
         qUser: userDoc,
         title: '用户文章',
         posts: posts,
+        page: page,
+        size: size,
+        total:count
       });
     });
   });

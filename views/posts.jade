@@ -12,3 +12,12 @@ each post, index in posts
           阅读 #{post.pv} 评论 #{post.comments.length}
     if index % 3 === 2 || index === posts.length - 1
         | </div>
+        
+div
+  if page > 1
+    span
+      a(title="上一页" href="?p=#{page-1}") 上一页
+  if page < total/size
+    span
+      a(title="下一页" href="?p=#{page+1}") 下一页
+
